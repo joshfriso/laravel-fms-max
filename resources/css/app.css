@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@theme {
+    --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+@plugin "daisyui" {
+    themes: fileno --default;
+}
+@source "../js/**/*.vue";
+@source "../views/**/*.blade.php";
+
+@plugin "daisyui/theme" {
+    name: "fileno";
+    default: true;
+    color-scheme: light;
+    --color-primary: #6e47d5;
+    --color-primary-content: #fafafa;
+    --color-secondary: #36978d;
+    --color-secondary-content: #060d01;
+    --color-accent: #df6e49;
+    --color-accent-content: #060d01;
+    --color-neutral: #060d01;
+    --color-neutral-content: #fafafa;
+    --color-base-100: #ffffff;
+    --color-base-200: #fafafa;
+    --color-base-300: #e5e5ea;
+    --color-base-content: #060d01;
+    --color-info: #36978d;
+    --color-info-content: #060d01;
+    --color-success: #36978d;
+    --color-success-content: #060d01;
+    --color-warning: #df6e49;
+    --color-warning-content: #060d01;
+    --color-error: #df6e49;
+    --color-error-content: #060d01;
+    --border: 1px;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+}
+
+:root {
+    --ui-stroke: color-mix(in srgb, var(--color-neutral) 14%, transparent);
+}
+
+.card,
+.btn,
+.input,
+.select,
+.textarea,
+.file-input {
+    border: 1px solid var(--ui-stroke);
+}
+
+.card,
+.btn {
+    box-shadow: none;
+}
+.input:focus,
+.input:focus-within,
+.select:focus,
+.textarea:focus,
+.file-input:focus {
+    border-color: var(--color-primary);
+}
