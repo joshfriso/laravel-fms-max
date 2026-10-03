@@ -1,6 +1,6 @@
-# Sistem Manajemen Berkas
+# File Management System (Lion Group Technical Test)
 
-Aplikasi pengelolaan dokumen perusahaan untuk tes teknis Laravel. Proyek ini berjalan secara lokal dan memakai `laravel-fms.zip` sebagai acuan alur folder, berkas, dan navigasi. Penyesuaian dari templat lama dijelaskan dalam [docs/template-baseline.md](docs/template-baseline.md).
+Aplikasi pengelolaan dokumen (FMS) perusahaan untuk tes teknis Laravel. Proyek ini berjalan secara lokal dan memakai `laravel-fms.zip` sebagai acuan alur folder, berkas, dan navigasi. Penyesuaian dari templat lama dijelaskan dalam [docs/template-baseline.md](docs/template-baseline.md).
 
 ## Fitur
 
@@ -42,7 +42,7 @@ npm run build
 powershell -ExecutionPolicy Bypass -File .\scripts\run-local.ps1
 ```
 
-Skrip `run-local.ps1` mengaktifkan `pdo_pgsql` hanya untuk proses server jika ekstensi belum aktif pada PHP CLI. Aplikasi tersedia di **http://127.0.0.1:8088**. Port dapat diganti dengan `-Port 8090` pada skrip, lalu sesuaikan `APP_URL` di `.env`.
+Script `run-local.ps1` mengaktifkan `pdo_pgsql` hanya untuk proses server jika ekstensi belum aktif pada PHP CLI. Aplikasi tersedia di **http://127.0.0.1:8088**. Port dapat diganti dengan `-Port 8090` pada skrip, lalu sesuaikan `APP_URL` di `.env`.
 
 Di macOS/Linux, aktifkan ekstensi `pdo_pgsql` pada PHP lalu jalankan `php artisan serve --host=127.0.0.1 --port=8088`.
 
@@ -69,5 +69,3 @@ npm run build
 ```
 
 Tes fitur memakai SQLite dalam memori agar tidak mengubah data PostgreSQL lokal. Verifikasi lokal juga menjalankan migrasi dan seeder pada PostgreSQL melalui `docker compose`.
-
-Composer melaporkan peringatan keamanan pada seluruh rilis Laravel 11 yang tersedia. Soal mewajibkan Laravel 11, sehingga `composer.json` mengatur `audit.block-insecure=false` agar pemasangan lokal dapat berjalan. Jalankan `composer audit` sebelum memakai aplikasi pada lingkungan yang terhubung ke jaringan.
