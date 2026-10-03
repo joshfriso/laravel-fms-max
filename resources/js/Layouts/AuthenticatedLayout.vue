@@ -1,13 +1,15 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import NavIcon from '@/Components/NavIcon.vue';
 
 const page = usePage();
-const isDark = computed(() => document.documentElement.dataset.theme === 'fileno-dark');
+const currentTheme = ref(document.documentElement.dataset.theme || 'fileno');
+const isDark = computed(() => currentTheme.value === 'fileno-dark');
 
 function toggleTheme() {
     const theme = isDark.value ? 'fileno' : 'fileno-dark';
+    currentTheme.value = theme;
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem('fms-theme', theme);
 }
