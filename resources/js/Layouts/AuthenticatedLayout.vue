@@ -4,6 +4,13 @@ import { Link, usePage } from '@inertiajs/vue3';
 import NavIcon from '@/Components/NavIcon.vue';
 
 const page = usePage();
+const isDark = computed(() => document.documentElement.dataset.theme === 'fileno-dark');
+
+function toggleTheme() {
+    const theme = isDark.value ? 'fileno' : 'fileno-dark';
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('fms-theme', theme);
+}
 const navigation = computed(() => {
     const items = [
         { name: 'Dashboard', route: 'dashboard', icon: 'dashboard' },
@@ -48,6 +55,7 @@ const navigation = computed(() => {
                         </span>
                     </button>
                     <ul tabindex="0" class="menu dropdown-content z-10 mt-2 w-48 rounded-box bg-base-100 p-2 text-base-content shadow-lg">
+                        <li><button type="button" @click="toggleTheme"><span aria-hidden="true">{{ isDark ? '☀' : '☾' }}</span>{{ isDark ? 'Mode terang' : 'Mode gelap' }}</button></li>
                         <li><Link :href="route('profile.edit')"><NavIcon name="profile" />Profil</Link></li>
                         <li><Link :href="route('logout')" method="post" as="button"><NavIcon name="logout" />Keluar</Link></li>
                     </ul>

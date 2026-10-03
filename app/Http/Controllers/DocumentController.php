@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\Document;
-use App\Models\Folder;
 use App\Services\DocumentService;
+use App\Repositories\DepartmentRepository;
+use App\Repositories\DocumentRepository;
+use App\Repositories\FolderRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -18,7 +19,12 @@ class DocumentController extends Controller
 {
     private const PREVIEWABLE_MIME_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
 
-    public function __construct(private DocumentService $documents) {}
+    public function __construct(
+        private DocumentService $documents,
+        private DocumentRepository $documentRepository,
+        private DepartmentRepository $departmentRepository,
+        private FolderRepository $folderRepository,
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -26,23 +32,13 @@ class DocumentController extends Controller
             'search' => ['nullable', 'string', 'max:255'],
             'department_id' => ['nullable', 'integer', 'exists:departments,id'],
         ]);
-        $documents = Document::with(['folder', 'department', 'uploader'])
-            ->when($filters['search'] ?? null, function ($query, $search) {
-                $pattern = '%'.strtolower($search).'%';
-                $query->where(function ($query) use ($pattern) {
-                    $query->whereRaw('LOWER(title) LIKE ?', [$pattern])
-                        ->orWhereRaw('LOWER(original_name) LIKE ?', [$pattern])
-                        ->orWhereHas('department', fn ($query) => $query->whereRaw('LOWER(name) LIKE ?', [$pattern]));
-                });
-            })
-            ->when($filters['department_id'] ?? null, fn ($query, $id) => $query->where('department_id', $id))
-            ->latest()->paginate(10)->withQueryString();
+        $documents = $this->documentRepository->paginate($filters);
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
             'filters' => $filters,
-            'departments' => Department::orderBy('name')->get(['id', 'name']),
-            'folders' => Folder::orderBy('name')->get(['id', 'name']),
+            'departments' => $this->departmentRepository->options(),
+            'folders' => $this->folderRepository->options(),
             'canManage' => $request->user()->isAdministrator(),
         ]);
     }
@@ -53,8 +49,8 @@ class DocumentController extends Controller
             'document' => $document->load(['folder', 'department', 'uploader']),
             'canPreview' => in_array($document->mime_type, self::PREVIEWABLE_MIME_TYPES, true),
             'canManage' => request()->user()->isAdministrator(),
-            'departments' => Department::orderBy('name')->get(['id', 'name']),
-            'folders' => Folder::orderBy('name')->get(['id', 'name']),
+            'departments' => $this->departmentRepository->options(),
+            'folders' => $this->folderRepository->options(),
         ]);
     }
 

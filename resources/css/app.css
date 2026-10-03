@@ -3,7 +3,35 @@
     --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 @plugin "daisyui" {
-    themes: fileno --default;
+    themes: fileno --default, fileno-dark;
+}
+
+@plugin "daisyui/theme" {
+    name: "fileno-dark";
+    color-scheme: dark;
+    --color-primary: #8f70e8;
+    --color-primary-content: #171322;
+    --color-secondary: #53b8aa;
+    --color-secondary-content: #071311;
+    --color-accent: #ef8969;
+    --color-accent-content: #24100a;
+    --color-neutral: #151b14;
+    --color-neutral-content: #f4f5f1;
+    --color-base-100: #151914;
+    --color-base-200: #0d110d;
+    --color-base-300: #262d25;
+    --color-base-content: #eef0eb;
+    --color-info: #53b8aa;
+    --color-info-content: #071311;
+    --color-success: #53b8aa;
+    --color-success-content: #071311;
+    --color-warning: #ef8969;
+    --color-warning-content: #24100a;
+    --color-error: #ef8969;
+    --color-error-content: #24100a;
+    --border: 1px;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
 }
 @source "../js/**/*.vue";
 @source "../views/**/*.blade.php";
