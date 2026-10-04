@@ -8,22 +8,20 @@ use Inertia\Middleware;
 class HandleInertiaRequests extends Middleware
 {
     /**
-     * The root template that is loaded on the first page visit.
+     * Blade utama Inertia.
      *
      * @var string
      */
     protected $rootView = 'app';
 
-    /**
-     * Determine the current asset version.
-     */
+    /** Versi aset. */
     public function version(Request $request): string|null
     {
         return parent::version($request);
     }
 
     /**
-     * Define the props that are shared by default.
+     * Prop bersama.
      *
      * @return array<string, mixed>
      */

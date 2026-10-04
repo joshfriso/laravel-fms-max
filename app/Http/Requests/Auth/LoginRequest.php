@@ -11,19 +11,13 @@ use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Izinkan request login. */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
-     */
+    /** @return array<string, \Illuminate\Contracts\Validation\Rule|array|string> Aturan login. */
     public function rules(): array
     {
         return [
@@ -33,7 +27,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Coba login.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -53,7 +47,7 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Ensure the login request is not rate limited.
+     * Cek batas percobaan.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -75,9 +69,7 @@ class LoginRequest extends FormRequest
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
+    /** Kunci rate limit. */
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
