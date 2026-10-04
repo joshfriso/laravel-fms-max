@@ -29,10 +29,15 @@ class DashboardController extends Controller
 
     private function fileTypeBreakdown(): array
     {
+        $counts = Document::whereIn('mime_type', collect(self::FILE_TYPE_CATEGORIES)->flatten()->all())
+            ->selectRaw('mime_type, count(*) as total')
+            ->groupBy('mime_type')
+            ->pluck('total', 'mime_type');
+
         return collect(self::FILE_TYPE_CATEGORIES)
             ->map(fn ($mimeTypes, $label) => [
                 'label' => $label,
-                'count' => Document::whereIn('mime_type', $mimeTypes)->count(),
+                'count' => collect($mimeTypes)->sum(fn ($mimeType) => $counts[$mimeType] ?? 0),
             ])
             ->values()
             ->all();
