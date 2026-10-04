@@ -8,6 +8,7 @@ const form = useForm({
     department_id: props.document.department_id,
     folder_id: props.document.folder_id,
 });
+const previewUrl = route('documents.preview', props.document.uuid);
 
 function deleteDocument() {
     if (window.confirm(`Hapus file "${props.document.original_name}"?`)) {
@@ -29,9 +30,15 @@ function deleteDocument() {
         <section v-if="canPreview" class="card bg-base-100 shadow-sm">
             <div class="card-body">
                 <h2 class="card-title">Pratinjau</h2>
-                <img v-if="document.mime_type.startsWith('image/')" :src="route('documents.preview', document.uuid)"
+                <img v-if="document.mime_type.startsWith('image/')" :src="previewUrl"
                     :alt="document.title" class="max-h-[32rem] rounded-field object-contain" />
-                <iframe v-else :src="route('documents.preview', document.uuid)" class="h-[32rem] w-full rounded-field border border-base-300" />
+                <object v-else :data="previewUrl" :type="document.mime_type"
+                    class="h-[32rem] w-full rounded-field border border-base-300">
+                    <div class="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+                        <p class="text-sm text-base-content/70">Pratinjau tidak terbuka di browser ini.</p>
+                        <a :href="previewUrl" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Buka pratinjau</a>
+                    </div>
+                </object>
             </div>
         </section>
 

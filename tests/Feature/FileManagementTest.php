@@ -60,6 +60,26 @@ class FileManagementTest extends TestCase
         $this->actingAs($viewer)->post(route('departments.store'), ['name' => 'Denied'])->assertForbidden();
     }
 
+    public function test_preview_renders_pdf_inline(): void
+    {
+        Storage::fake('local');
+        $admin = User::factory()->create(['role' => 'administrator']);
+        $department = Department::create(['name' => 'Finance']);
+        $folder = Folder::create(['name' => 'Reports', 'created_by_id' => $admin->id]);
+        $document = Document::create([
+            'title' => 'Budget', 'department_id' => $department->id, 'folder_id' => $folder->id,
+            'original_name' => 'budget.pdf', 'storage_path' => 'documents/budget.pdf',
+            'mime_type' => 'application/pdf', 'size' => 10, 'uploaded_by_id' => $admin->id,
+        ]);
+        Storage::disk('local')->put($document->storage_path, '%PDF-1.4 test');
+
+        $response = $this->actingAs($admin)->get(route('documents.preview', $document))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertStringStartsWith('inline;', $response->headers->get('content-disposition'));
+    }
+
     public function test_administrator_uploads_edits_searches_and_deletes_a_document(): void
     {
         Storage::fake('local');

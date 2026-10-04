@@ -81,11 +81,11 @@ function deleteDocument(file) {
                     @dragover.prevent="isDraggingOver = true" @dragleave.prevent="isDraggingOver = false" @drop.prevent="onDrop">
                     <span class="text-sm font-medium">{{ upload.file ? upload.file.name : 'Seret file ke sini, atau klik untuk pilih' }}</span>
                     <span class="text-xs text-base-content/60">PDF, gambar, Office, atau teks — maks. 20 MB</span>
-                    <input ref="uploadInput" class="hidden" type="file" required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt"
+                    <input ref="uploadInput" class="hidden" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt"
                         @change="pickFile($event.target.files[0])" />
                 </label>
 
-                <div class="card-actions justify-end"><button type="submit" class="btn btn-primary" :disabled="upload.processing || !departments.length || !folders.length">Upload</button></div>
+                <div class="card-actions justify-end"><button type="submit" class="btn btn-primary" :disabled="upload.processing || !upload.file || !departments.length || !folders.length">Upload</button></div>
             </div>
         </form>
 

@@ -11,8 +11,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DocumentController extends Controller
@@ -96,11 +98,19 @@ class DocumentController extends Controller
         return Storage::disk('local')->download($document->storage_path, $document->original_name);
     }
 
-    public function preview(Document $document): StreamedResponse
+    public function preview(Document $document): BinaryFileResponse
     {
         abort_unless(in_array($document->mime_type, self::PREVIEWABLE_MIME_TYPES, true), 404);
         abort_unless(Storage::disk('local')->exists($document->storage_path), 404);
 
-        return Storage::disk('local')->response($document->storage_path, $document->original_name);
+        $response = response()->file(Storage::disk('local')->path($document->storage_path), [
+            'Content-Type' => $document->mime_type,
+            'Cache-Control' => 'private, max-age=0, must-revalidate',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+
+        $response->setContentDisposition('inline', $document->original_name, Str::ascii($document->original_name));
+
+        return $response;
     }
 }
