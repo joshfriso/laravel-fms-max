@@ -1,0 +1,8 @@
+$kind: http-request
+description: Keluar dari sesi admin.
+url: "{{base_url}}/logout"
+method: POST
+headers:
+  X-XSRF-TOKEN: "{{csrf_token}}"
+  Referer: "{{base_url}}/dashboard"
+order: 9000

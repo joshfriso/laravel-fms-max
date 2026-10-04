@@ -1,0 +1,38 @@
+$kind: collection
+description: Smoke test standar untuk File Management System. Jalankan berurutan dari Auth > Login sampai Auth > Logout.
+variables:
+  base_url: http://127.0.0.1:8088
+  csrf_token: ""
+  admin_email: admin@example.com
+  admin_password: password
+scripts:
+  - type: beforeRequest
+    language: text/javascript
+    code: |-
+      const methodNeedsCsrf = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(pm.request.method);
+      if (methodNeedsCsrf) {
+          const cookieToken = pm.cookies.get('XSRF-TOKEN');
+          if (cookieToken) {
+              const token = decodeURIComponent(cookieToken);
+              pm.environment.set('csrf_token', token);
+              pm.request.headers.upsert({ key: 'X-XSRF-TOKEN', value: token });
+          }
+      }
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Status bukan error', () => pm.expect(pm.response.code).to.be.below(400));
+
+      if (pm.info.requestName === 'Login') {
+          const token = pm.cookies.get('XSRF-TOKEN');
+          pm.test('Cookie XSRF-TOKEN tersedia', () => pm.expect(token).to.be.ok);
+          if (token) pm.environment.set('csrf_token', decodeURIComponent(token));
+      }
+
+      if (pm.info.requestName === 'Login admin') {
+          pm.test('Login tidak kedaluwarsa CSRF', () => pm.expect(pm.response.code).to.not.eql(419));
+      }
+
+      if (pm.info.requestName === 'Dashboard') {
+          pm.test('Dashboard terbuka setelah login', () => pm.expect(pm.response.text()).to.include('Dashboard'));
+      }

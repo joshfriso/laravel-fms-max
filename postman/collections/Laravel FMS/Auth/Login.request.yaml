@@ -1,0 +1,5 @@
+$kind: http-request
+description: Buka halaman login untuk membuat cookie sesi dan cookie XSRF-TOKEN.
+url: "{{base_url}}/login"
+method: GET
+order: 1000

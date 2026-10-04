@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{base_url}}/trash"
+method: GET
+order: 8000

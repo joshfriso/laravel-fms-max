@@ -69,3 +69,7 @@ npm run build
 ```
 
 Tes fitur memakai SQLite dalam memori agar tidak mengubah data PostgreSQL lokal. Verifikasi lokal juga menjalankan migrasi dan seeder pada PostgreSQL melalui `docker compose`.
+
+## Dokumentasi API
+
+Koleksi Postman dan panduan penggunaannya tersedia di [docs/api-documentation.md](docs/api-documentation.md).

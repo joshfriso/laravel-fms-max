@@ -1,0 +1,14 @@
+$kind: http-request
+description: Login sebagai administrator demo. Jalankan Auth > Login terlebih dahulu.
+url: "{{base_url}}/login"
+method: POST
+headers:
+  X-XSRF-TOKEN: "{{csrf_token}}"
+  Referer: "{{base_url}}/login"
+body:
+  type: urlencoded
+  content:
+    email: "{{admin_email}}"
+    password: "{{admin_password}}"
+    remember: on
+order: 2000

@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "Laravel FMS",
+    "description": "Smoke test standar untuk rute web Laravel FMS. Jalankan berurutan: ambil cookie CSRF, login admin, cek halaman utama, lalu logout.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const methodNeedsCsrf = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(pm.request.method);",
+          "if (methodNeedsCsrf) {",
+          "  const cookieToken = pm.cookies.get('XSRF-TOKEN');",
+          "  if (cookieToken) {",
+          "    const token = decodeURIComponent(cookieToken);",
+          "    pm.environment.set('csrf_token', token);",
+          "    pm.request.headers.upsert({ key: 'X-XSRF-TOKEN', value: token });",
+          "  }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Status bukan error', () => pm.expect(pm.response.code).to.be.below(400));",
+          "if (pm.info.requestName === 'Login') {",
+          "  const token = pm.cookies.get('XSRF-TOKEN');",
+          "  pm.test('Cookie XSRF-TOKEN tersedia', () => pm.expect(token).to.be.ok);",
+          "  if (token) pm.environment.set('csrf_token', decodeURIComponent(token));",
+          "}",
+          "if (pm.info.requestName === 'Login admin') {",
+          "  pm.test('Login tidak kedaluwarsa CSRF', () => pm.expect(pm.response.code).to.not.eql(419));",
+          "}",
+          "if (pm.info.requestName === 'Dashboard') {",
+          "  pm.test('Dashboard terbuka setelah login', () => pm.expect(pm.response.text()).to.include('Dashboard'));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8088" },
+    { "key": "csrf_token", "value": "" },
+    { "key": "admin_email", "value": "admin@example.com" },
+    { "key": "admin_password", "value": "password" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            },
+            "description": "Buka halaman login untuk membuat cookie sesi dan cookie XSRF-TOKEN."
+          }
+        },
+        {
+          "name": "Login admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-XSRF-TOKEN", "value": "{{csrf_token}}" },
+              { "key": "Referer", "value": "{{base_url}}/login" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "email", "value": "{{admin_email}}", "type": "text" },
+                { "key": "password", "value": "{{admin_password}}", "type": "text" },
+                { "key": "remember", "value": "on", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            },
+            "description": "Login sebagai administrator demo. Jalankan request Login lebih dulu agar cookie CSRF tersedia."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-XSRF-TOKEN", "value": "{{csrf_token}}" },
+              { "key": "Referer", "value": "{{base_url}}/dashboard" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": ["{{base_url}}"],
+              "path": ["logout"]
+            },
+            "description": "Keluar dari sesi admin."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Folders",
+      "item": [
+        {
+          "name": "Daftar folder",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/folders",
+              "host": ["{{base_url}}"],
+              "path": ["folders"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Daftar dokumen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/documents",
+              "host": ["{{base_url}}"],
+              "path": ["documents"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "Daftar departemen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/departments",
+              "host": ["{{base_url}}"],
+              "path": ["departments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activity",
+      "item": [
+        {
+          "name": "Daftar aktivitas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/activity",
+              "host": ["{{base_url}}"],
+              "path": ["activity"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trash",
+      "item": [
+        {
+          "name": "Daftar sampah",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/trash",
+              "host": ["{{base_url}}"],
+              "path": ["trash"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
