@@ -89,7 +89,7 @@ class FileManagementTest extends TestCase
 
         $this->actingAs($admin)->post(route('documents.store'), [
             'title' => 'Leave Policy', 'department_id' => $department->id, 'folder_id' => $folder->id,
-            'file' => UploadedFile::fake()->create('leave.pdf', 10, 'application/pdf'),
+            'files' => [UploadedFile::fake()->create('leave.pdf', 10, 'application/pdf')],
         ])->assertRedirect();
 
         $document = Document::firstOrFail();
@@ -107,6 +107,28 @@ class FileManagementTest extends TestCase
         Storage::disk('local')->assertExists($document->storage_path);
     }
 
+    public function test_administrator_can_upload_multiple_documents_at_once(): void
+    {
+        Storage::fake('local');
+        $admin = User::factory()->create(['role' => 'administrator']);
+        $department = Department::create(['name' => 'HR']);
+        $folder = Folder::create(['name' => 'Policies', 'created_by_id' => $admin->id]);
+
+        $this->actingAs($admin)->post(route('documents.store'), [
+            'department_id' => $department->id,
+            'folder_id' => $folder->id,
+            'files' => [
+                UploadedFile::fake()->create('leave.pdf', 10, 'application/pdf'),
+                UploadedFile::fake()->create('benefit.pdf', 10, 'application/pdf'),
+            ],
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('documents', ['title' => 'leave', 'original_name' => 'leave.pdf']);
+        $this->assertDatabaseHas('documents', ['title' => 'benefit', 'original_name' => 'benefit.pdf']);
+
+        Document::all()->each(fn (Document $document) => Storage::disk('local')->assertExists($document->storage_path));
+    }
+
     public function test_invalid_upload_and_deletion_of_used_department_are_rejected(): void
     {
         $admin = User::factory()->create(['role' => 'administrator']);
@@ -115,8 +137,8 @@ class FileManagementTest extends TestCase
 
         $this->actingAs($admin)->post(route('documents.store'), [
             'title' => 'Bad', 'department_id' => $department->id, 'folder_id' => $folder->id,
-            'file' => UploadedFile::fake()->create('script.php', 1, 'application/x-php'),
-        ])->assertSessionHasErrors('file');
+            'files' => [UploadedFile::fake()->create('script.php', 1, 'application/x-php')],
+        ])->assertSessionHasErrors('files.0');
 
         Document::create([
             'title' => 'Policy', 'department_id' => $department->id, 'folder_id' => $folder->id,

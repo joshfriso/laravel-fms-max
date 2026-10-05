@@ -68,7 +68,7 @@ class TrashAndActivityTest extends TestCase
 
         $this->actingAs($admin)->post(route('documents.store'), [
             'title' => 'Budget', 'department_id' => $department->id, 'folder_id' => $folder->id,
-            'file' => UploadedFile::fake()->create('budget.pdf', 10, 'application/pdf'),
+            'files' => [UploadedFile::fake()->create('budget.pdf', 10, 'application/pdf')],
         ])->assertRedirect();
         $document = Document::firstOrFail();
         $path = $document->storage_path;

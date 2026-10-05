@@ -17,7 +17,7 @@ class DocumentService
 
         try {
             $document = Document::create([
-                'title' => $data['title'],
+                'title' => $data['title'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
                 'department_id' => $data['department_id'],
                 'folder_id' => $data['folder_id'],
                 'uploaded_by_id' => $user->id,

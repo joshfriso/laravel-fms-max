@@ -14,19 +14,17 @@ const props = defineProps({
 
 const search = ref(props.filters.search || '');
 const departmentId = ref(props.filters.department_id || '');
-const upload = useForm({ title: '', department_id: '', folder_id: '', file: null });
+const upload = useForm({ department_id: '', folder_id: '', files: [] });
 const uploadInput = ref(null);
 const isDraggingOver = ref(false);
 
-function pickFile(file) {
-    upload.file = file;
-    if (!upload.title) upload.title = file.name.replace(/\.[^.]+$/, '');
+function pickFiles(files) {
+    upload.files = Array.from(files || []);
 }
 
 function onDrop(event) {
     isDraggingOver.value = false;
-    const file = event.dataTransfer.files[0];
-    if (file) pickFile(file);
+    pickFiles(event.dataTransfer.files);
 }
 
 function applyFilters() {
@@ -63,7 +61,6 @@ function deleteDocument(file) {
                 <h2 class="card-title">Upload file</h2>
                 <p v-if="!departments.length || !folders.length" class="text-sm text-base-content/70">Buat departemen dan folder sebelum upload file.</p>
                 <div class="grid gap-3 sm:grid-cols-2">
-                    <label><span class="mb-1 block text-sm">Judul</span><input v-model="upload.title" class="input w-full" type="text" required maxlength="255" /></label>
                     <label><span class="mb-1 block text-sm">Departemen</span>
                         <select v-model="upload.department_id" class="select w-full" required><option value="" disabled>Pilih departemen</option>
                             <option v-for="department in departments" :key="department.id" :value="department.id">{{ department.name }}</option>
@@ -79,13 +76,17 @@ function deleteDocument(file) {
                 <label class="flex cursor-pointer flex-col items-center gap-2 rounded-box border-2 border-dashed p-8 text-center transition-colors"
                     :class="isDraggingOver ? 'border-primary bg-primary/5' : 'border-base-300'"
                     @dragover.prevent="isDraggingOver = true" @dragleave.prevent="isDraggingOver = false" @drop.prevent="onDrop">
-                    <span class="text-sm font-medium">{{ upload.file ? upload.file.name : 'Seret file ke sini, atau klik untuk pilih' }}</span>
+                    <span class="text-sm font-medium">{{ upload.files.length ? `${upload.files.length} file dipilih` : 'Seret file ke sini, atau klik untuk pilih' }}</span>
                     <span class="text-xs text-base-content/60">PDF, gambar, Office, atau teks — maks. 20 MB</span>
-                    <input ref="uploadInput" class="hidden" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt"
-                        @change="pickFile($event.target.files[0])" />
+                    <input ref="uploadInput" class="hidden" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt"
+                        @change="pickFiles($event.target.files)" />
                 </label>
 
-                <div class="card-actions justify-end"><button type="submit" class="btn btn-primary" :disabled="upload.processing || !upload.file || !departments.length || !folders.length">Upload</button></div>
+                <ul v-if="upload.files.length" class="grid gap-1 text-sm text-base-content/70">
+                    <li v-for="file in upload.files" :key="`${file.name}-${file.size}`">{{ file.name }}</li>
+                </ul>
+
+                <div class="card-actions justify-end"><button type="submit" class="btn btn-primary" :disabled="upload.processing || !upload.department_id || !upload.folder_id || !upload.files.length || !departments.length || !folders.length">Upload</button></div>
             </div>
         </form>
 

@@ -60,14 +60,17 @@ class DocumentController extends Controller
     {
         Gate::authorize('admin');
         $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
             'department_id' => ['required', 'exists:departments,id'],
             'folder_id' => ['required', 'exists:folders,id'],
-            'file' => ['required', 'file', 'max:20480', 'mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,txt'],
+            'files' => ['required', 'array', 'min:1'],
+            'files.*' => ['file', 'max:20480', 'mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,txt'],
         ]);
-        $this->documents->upload($data, $data['file'], $request->user());
 
-        return to_route('documents.index')->with('success', 'File uploaded.');
+        foreach ($data['files'] as $file) {
+            $this->documents->upload($data, $file, $request->user());
+        }
+
+        return to_route('documents.index')->with('success', count($data['files']) > 1 ? 'File uploaded.' : 'File uploaded.');
     }
 
     public function update(Request $request, Document $document): RedirectResponse
