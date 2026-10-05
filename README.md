@@ -5,7 +5,7 @@ Aplikasi pengelolaan dokumen (FMS) perusahaan untuk tes teknis Laravel. Proyek i
 ## Fitur
 
 - Autentikasi dan pendaftaran akun dengan Laravel Breeze. Akun baru otomatis berperan sebagai **Viewer**.
-- **Administrator**: membuat, mengganti nama, dan menghapus folder kosong; mengelola departemen; mengunggah, mengubah metadata, dan menghapus dokumen.
+- **Administrator**: membuat, mengganti nama, dan menghapus folder kosong; mengelola departemen; mengunggah satu atau beberapa dokumen, mengubah metadata, dan menghapus dokumen.
 - **Viewer**: melihat dasbor, folder, detail dokumen, mencari dokumen, menyaring departemen, dan mengunduh berkas. Server menolak perubahan data dari Viewer.
 - Folder induk-anak tanpa batas tingkat, lengkap dengan jejak navigasi dan aturan pencegah siklus.
 - Dasbor menampilkan 10 berkas terbaru serta jumlah folder, berkas, dan departemen.
@@ -14,6 +14,10 @@ Aplikasi pengelolaan dokumen (FMS) perusahaan untuk tes teknis Laravel. Proyek i
 - Pratinjau PDF dan gambar tersedia langsung pada halaman detail berkas.
 - Folder, berkas, dan departemen memakai penghapusan lunak. Administrator dapat memulihkan atau menghapusnya secara permanen melalui halaman **Sampah**.
 - Halaman **Aktivitas** mencatat setiap perubahan data beserta pelaku dan waktunya.
+
+## Mengelola dokumen
+
+Pada halaman **Dokumen**, pilih departemen dan folder, lalu seret satu atau beberapa file ke area upload. Judul awal mengikuti nama file. Untuk mengubah judul, klik nama file pada daftar dokumen, buka halaman detail, lalu ubah bagian **Judul**.
 
 ## Arsitektur
 
